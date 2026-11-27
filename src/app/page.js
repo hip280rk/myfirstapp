@@ -1,6 +1,8 @@
 "use client";
 
-import { useState } from "react";
+//import { useState } from "react";
+import { useState, useEffect } from "react";
+
 
 export default function Home() {
   const [tasks, setTasks] = useState([
@@ -8,6 +10,25 @@ export default function Home() {
     "Build first app",
   ]);
   const [input, setInput] = useState("");
+  const [hasLoaded, setHasLoaded] = useState(false); // Tracks initial load (a flag)
+
+  // 1. LOAD saved tasks from localStorage once when the page opens, Load effect
+  useEffect(() => {
+    const savedTasks = localStorage.getItem("my-tasks");
+    if (savedTasks) {
+      setTasks(JSON.parse(savedTasks)); // Convert JSON text back into an array
+    }
+    setHasLoaded(true);
+  }, []); // Empty [] means: run ONLY ONCE on page load
+
+  // 2. SAVE tasks to localStorage every time `tasks` changes
+  useEffect(() => {
+    if (hasLoaded) {
+      localStorage.setItem("my-tasks", JSON.stringify(tasks)); // Convert array into JSON text
+    }
+  }, [tasks, hasLoaded]); // Runs whenever `tasks` updates
+
+  // ... keep your existing addTask, deleteTask, clearAllTasks, and return (...) JSX below!
 
   const addTask = (e) => {
     e.preventDefault();
